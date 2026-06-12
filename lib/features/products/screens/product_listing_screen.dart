@@ -4,6 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/product_provider.dart';
 import '../widgets/product_card.dart';
 
+import '../../cart/providers/cart_provider.dart';
+
+import '../../cart/screens/cart_screen.dart';
+
 class ProductListingScreen extends ConsumerWidget {
   const ProductListingScreen({super.key});
 
@@ -14,14 +18,59 @@ class ProductListingScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Products'),
+        actions: [
+          Consumer(
+            builder: (context, ref, _) {
+              final cart = ref.watch(cartProvider);
+
+              return Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_cart),
+                    onPressed: () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                   builder: (_) => const CartScreen(),
+                ),
+             );
+       },
       ),
+                  if (cart.isNotEmpty)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          cart.length.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+
       body: productsAsync.when(
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),
+
         error: (error, stackTrace) => Center(
           child: Text(error.toString()),
         ),
+
         data: (products) {
           if (products.isEmpty) {
             return const Center(
@@ -45,7 +94,9 @@ class ProductListingScreen extends ConsumerWidget {
               return ProductCard(
                 product: product,
                 onAddToCart: () {
-                  // TODO: add cart logic
+                  ref
+                      .read(cartProvider.notifier)
+                      .addToCart(product);
                 },
               );
             },
