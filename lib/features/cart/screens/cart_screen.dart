@@ -13,6 +13,43 @@ class CartScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Cart'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_sweep),
+            tooltip: 'Clear Cart',
+            onPressed: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Clear Cart'),
+                    content: const Text(
+                      'Remove all items from cart?',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context, false);
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context, true);
+                        },
+                        child: const Text('Clear'),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              if (confirmed == true) {
+                ref.read(cartProvider.notifier).clearCart();
+              }
+            },
+          ),
+        ],
       ),
       body: cart.isEmpty
           ? const Center(
@@ -59,6 +96,18 @@ class CartScreen extends ConsumerWidget {
                                 ref
                                     .read(cartProvider.notifier)
                                     .increaseQuantity(
+                                      item.product.id,
+                                    );
+                              },
+                            ),
+
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              tooltip: 'Remove Item',
+                              onPressed: () {
+                                ref
+                                    .read(cartProvider.notifier)
+                                    .removeFromCart(
                                       item.product.id,
                                     );
                               },
