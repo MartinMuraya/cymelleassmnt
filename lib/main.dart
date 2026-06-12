@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'features/products/screens/product_listing_screen.dart';
 
 void main() {
   runApp(
@@ -17,11 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Cymelle Assessment',
-      home: Scaffold(
-        body: Center(
-          child: Text('Cymelle Assessment'),
-        ),
-      ),
+      home: ProductListingScreen(),
     );
   }
 }
